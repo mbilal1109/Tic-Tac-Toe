@@ -10,4 +10,22 @@ const Gameboard = (function () {
   return gameboardArray;
 })();
 
+function createPlayer(name, marker) {
+  let playerTurn = false;
+
+  const isPlayersTurn = () => playerTurn;
+  const endPlayersTurn = () =>
+    playerTurn == false ? (playerTurn = true) : (playerTurn = false);
+
+  return { name, marker, isPlayersTurn, endPlayersTurn };
+}
+
+// Testing
 console.log(Gameboard);
+
+const player1 = createPlayer("player1", "X");
+console.log(player1)
+console.log(player1.isPlayersTurn())
+console.log(player1.endPlayersTurn())
+console.log(player1.endPlayersTurn())
+console.log(player1.endPlayersTurn())
