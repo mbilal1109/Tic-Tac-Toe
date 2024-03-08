@@ -1,4 +1,4 @@
-const Gameboard = (function () {
+const gameboard = (function () {
   const gameboardArray = [];
 
   for (let row = 0; row < 3; row++) {
@@ -15,13 +15,22 @@ function createPlayer(name, marker) {
 
   const isPlayersTurn = () => playerTurn;
   const endPlayersTurn = () =>
-    playerTurn == false ? (playerTurn = true) : (playerTurn = false);
+    playerTurn == true ? (playerTurn = false) : (playerTurn = true);
 
   return { name, marker, isPlayersTurn, endPlayersTurn };
 }
 
+function playGame() {
+  const playerOne = createPlayer("Player-1", "X");
+  const playerTwo = createPlayer("Player-2", "O");
+
+  return { playerOne, playerTwo }
+}
+
+
+
 // Testing
-console.log(Gameboard);
+console.log(gameboard);
 
 const player1 = createPlayer("player1", "X");
 console.log(player1)
@@ -29,3 +38,7 @@ console.log(player1.isPlayersTurn())
 console.log(player1.endPlayersTurn())
 console.log(player1.endPlayersTurn())
 console.log(player1.endPlayersTurn())
+
+console.log(playGame())
+console.log(playGame().playerOne)
+console.log(playGame().playerTwo)
