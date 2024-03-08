@@ -14,31 +14,38 @@ function createPlayer(name, marker) {
   let playerTurn = false;
 
   const isPlayersTurn = () => playerTurn;
-  const endPlayersTurn = () =>
-    playerTurn == true ? (playerTurn = false) : (playerTurn = true);
 
-  return { name, marker, isPlayersTurn, endPlayersTurn };
+  const startPlayersTurn = function() {
+    if(playerTurn == false) 
+    return playerTurn = true;
+  }
+
+  const endPlayersTurn = function() {
+    if(playerTurn == true) 
+    return playerTurn == false;
+  }
+
+  return { name, marker, isPlayersTurn, endPlayersTurn, startPlayersTurn };
 }
 
 function playGame() {
   const playerOne = createPlayer("Player-1", "X");
   const playerTwo = createPlayer("Player-2", "O");
 
+  console.log(gameboard);
+
+  console.log(playerOne.isPlayersTurn());
+  console.log(playerTwo.isPlayersTurn());
+
+  console.log(playerOne.startPlayersTurn());
+  console.log(playerTwo.startPlayersTurn());
+
+  console.log(playerOne.endPlayersTurn());
+
   return { playerOne, playerTwo }
 }
 
 
+playGame()
 
 // Testing
-console.log(gameboard);
-
-const player1 = createPlayer("player1", "X");
-console.log(player1)
-console.log(player1.isPlayersTurn())
-console.log(player1.endPlayersTurn())
-console.log(player1.endPlayersTurn())
-console.log(player1.endPlayersTurn())
-
-console.log(playGame())
-console.log(playGame().playerOne)
-console.log(playGame().playerTwo)
