@@ -20,15 +20,10 @@ function createPlayer(name, marker) {
   };
 
   const endPlayersTurn = function () {
-    if (playerTurn == true) return playerTurn == false;
+    if (playerTurn == true) return (playerTurn = false);
   };
 
-  return { name, marker, isPlayersTurn, endPlayersTurn, startPlayersTurn };
-}
-
-function updateGameboard(row, col, player, gameboard) {
-  gameboard[row][col] = player.marker;
-  return gameboard;
+  return { marker, isPlayersTurn, endPlayersTurn, startPlayersTurn };
 }
 
 function playGame() {
@@ -36,24 +31,25 @@ function playGame() {
   const playerTwo = createPlayer("Player-2", "O");
   const gameboardObj = gameboard;
 
-  console.log(updateGameboard(2, 0, playerOne, gameboardObj));
-  console.log(updateGameboard(2, 2, playerTwo, gameboardObj));
-  console.log(updateGameboard(0, 0, playerOne, gameboardObj));
-  console.log(updateGameboard(1, 1, playerTwo, gameboardObj));
-  console.log(updateGameboard(1, 0, playerOne, gameboardObj));
+  function updateGameboard(row, col, player, gameboard) {
+    gameboard[row][col] = player.marker;
+    return gameboard;
+  }
 
-  return { playerOne, playerTwo };
+  function start() {
+
+    // randomize this later to randomly select who goes first.
+    playerOne.startPlayersTurn();
+    
+    if(playerOne.isPlayersTurn()) {
+      console.log("Player 1 Turn");
+    } else if(playerTwo.isPlayersTurn()) {
+      console.log("Player 2 Turn");
+    }
+  }
+
+  return { start };
 }
 
-playGame();
-
-// Testing
-// console.log(gameboard);
-
-// console.log(playerOne.isPlayersTurn());
-// console.log(playerTwo.isPlayersTurn());
-
-// console.log(playerOne.startPlayersTurn());
-// console.log(playerTwo.startPlayersTurn());
-
-// console.log(playerOne.endPlayersTurn());
+const game = playGame();
+game.start();
