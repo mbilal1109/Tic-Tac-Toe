@@ -14,33 +14,18 @@ const gameboard = (function() {
 
 function createPlayer(name, marker) {
     let playersTurn = false;
-    let turnTaken = false;
+    // let turnTaken = false;
 
     const startPlayersTurn = () => playersTurn = true;
     const endPlayersTurn = () => playersTurn = false;
 
-    const triggerTurn = () => {
-        // Player's turn will end if turnTaken is true
-        if(turnTaken) {
-            turnTaken = false;
-        }
-    }
-
-    const checkIfTurnTaken = () => {
-        if(turnTaken) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    return {name, marker, startPlayersTurn, endPlayersTurn, triggerTurn, checkIfTurnTaken};
+    return {name, marker, startPlayersTurn, endPlayersTurn};
 }
 
 function playGame() {
     // Winning Condition
     function checkWinner() {
-        // Can win from 
+        // Can win verically, horizontally, and diagonally
         console.log("Winner");
     }
 
@@ -50,27 +35,32 @@ function playGame() {
     }
 
     // Player Moves
-    function makeMove(player) {
-        // before the move is made, check if cell is valid
-        checkIfCellEmpty();
-        console.log("Move Made");
-        player.triggerTurn();
-        player.endPlayersTurn();
-        // Also will need to check the winner after every move and draw
+    function makeMove(row, column, player) {
+        // Before the move is made, check if cell is valid
+        // If cell valid, then it will place the marker
+        gameArray = gameboard;
+        if(checkIfCellEmpty(row, column, player)) {
+            gameArray[row][column] = player.marker;
+            console.log("Move Made");
+        } else {
+            console.log("Select a valid cell");
+        }
+        // Also will need to check if winner should be declared or
+        // a draw should happen.
     }
 
     // Cell Validation
-    function checkIfCellEmpty(row, column, player) {
+    function checkIfCellEmpty(row, column) {
         // First check if the row & cols given are valid
         // Next check if that index is empty or not
         if(row <= 2 && column <= 2) {
             gameArray = gameboard;
             if(gameArray[row][column] == '') {
-                gameArray[row][column] = player.marker;
-                console.log(gameArray)
-            } else {
-                console.log("Cell is not empty!")
-            }
+                console.log("Cell is empty!")
+                return true;
+            } 
+            console.log("Cell is not empty!")
+            return false;
         }
     }
 
@@ -92,5 +82,7 @@ const playerOne = createPlayer("Player-1", "X");
 const playerTwo = createPlayer("Player-2", "O");
 
 const game = playGame();
-game.checkIfCellEmpty(1, 2, playerOne);
-game.checkIfCellEmpty(1, 1, playerOne);
+game.checkIfCellEmpty(1, 2);
+game.checkIfCellEmpty(1, 1);
+
+game.makeMove(1, 2, playerTwo);
