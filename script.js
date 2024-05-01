@@ -24,13 +24,60 @@ function createPlayer(name, marker) {
 
 function playGame() {
     // Winning Condition
-    function checkWinner() {
-        // Can win verically, horizontally, and diagonally
-        console.log("Winner");
+    function checkWinner(player) {
+        // Can win vertically, horizontally, and diagonally
+        // Player can win from 8 ways: 3 vertically, 3 horizontallly, 2 diagonally
+        gameArray = gameboard;
+        let count = 0;
+
+        // for(let row = 0; row < gameboard.length; row++) {
+        //     for(let col = 0; col < gameboard.length; col++) {
+        //         if(gameboard[row][col] == player.marker && count <= 3) {
+        //             count++;
+        //         }
+        //     }
+        // }
+
+        // for(let col = 0; col < gameboard.length; col++) {
+        //     for(let row = 0; row < gameboard.length; row++) {
+        //         if(gameboard[col][row] == player.marker && count <= 3) {
+        //             count++;
+        //         }
+        //     }
+        // }
+
+        // First Diagonal Check
+        for(let row = 0; row < gameboard.length; row++) {
+            if(gameboard[row][row] == player.marker && count < 3) {
+                count++;
+            }
+        }
+        //count = winningHelper(count);
+
+        // Second Diagonal Check
+        let col = gameboard.length - 1; // should be 2 according to the board
+        for(let row = 0; row < gameboard.length; row++) {
+            if(gameboard[row][col] == player.marker && count < 3) {
+                count++;
+                col--;
+            }
+        }
+        //winningHelper(count);
+    }
+
+    function winningHelper(count) {
+        if(count == 3) {
+            console.log("Winner -> True")
+        }
+        console.log("Winner -> False")
+        return 0;
     }
 
     // Draw Condition
     function checkIfDraw() {
+        // Keep a var that keeps track of the moves made in total by both players
+        // Total 9 moves can be made, if var reaches 9 and no winner declared then its
+        // a draw.
         console.log("Draw");
     }
 
@@ -56,12 +103,13 @@ function playGame() {
         if(row <= 2 && column <= 2) {
             gameArray = gameboard;
             if(gameArray[row][column] == '') {
-                console.log("Cell is empty!")
+                console.log("Cell is empty!");
                 return true;
             } 
-            console.log("Cell is not empty!")
+            console.log("Cell is not empty!");
             return false;
         }
+        console.log("Cell Out Of Bound, Row & Columns Start From 0.");
     }
 
     // Game Over
@@ -76,13 +124,15 @@ function playGame() {
 
 // Some Testing
 console.log(gameboard)
-gameboard[1][2] = "X"
 
 const playerOne = createPlayer("Player-1", "X");
 const playerTwo = createPlayer("Player-2", "O");
 
 const game = playGame();
-game.checkIfCellEmpty(1, 2);
-game.checkIfCellEmpty(1, 1);
+game.makeMove(0, 2, playerOne);
 
-game.makeMove(1, 2, playerTwo);
+game.makeMove(1, 1, playerOne);
+
+game.makeMove(2, 0, playerOne);
+
+game.checkWinner(playerOne);
