@@ -24,10 +24,9 @@ function createPlayer(name, marker) {
 
 function playGame() {
     // Winning Condition
-    function checkWinner(player) {
+    function checkIfWinnerOrDraw(player) {
         // Can win vertically, horizontally, and diagonally
         // Player can win from 8 ways: 3 vertically, 3 horizontallly, 2 diagonally
-        gameArray = gameboard;
         let count = 0;
 
         // for(let row = 0; row < gameboard.length; row++) {
@@ -38,39 +37,51 @@ function playGame() {
         //     }
         // }
 
-        // for(let col = 0; col < gameboard.length; col++) {
-        //     for(let row = 0; row < gameboard.length; row++) {
-        //         if(gameboard[col][row] == player.marker && count <= 3) {
-        //             count++;
-        //         }
-        //     }
-        // }
-
-        // First Diagonal Check
-        for(let row = 0; row < gameboard.length; row++) {
-            if(gameboard[row][row] == player.marker && count < 3) {
-                count++;
+        if(count != 3) {
+            count = 0;
+            for(let col = 0; col < gameboard.length; col++) {
+                count = 0;
+                for(let row = 0; row < gameboard.length; row++) {
+                    if(gameboard[col][row] == player.marker && count < 3) {
+                        count++;
+                    }
+                }
             }
-        }
-        //count = winningHelper(count);
-
-        // Second Diagonal Check
-        let col = gameboard.length - 1; // should be 2 according to the board
-        for(let row = 0; row < gameboard.length; row++) {
-            if(gameboard[row][col] == player.marker && count < 3) {
-                count++;
-                col--;
-            }
-        }
-        //winningHelper(count);
-    }
-
-    function winningHelper(count) {
-        if(count == 3) {
+        } else {
             console.log("Winner -> True")
+            return true;
         }
+
+        if(count != 3) {
+            count = 0;
+            // First Diagonal Check
+            for(let row = 0; row < gameboard.length; row++) {
+                if(gameboard[row][row] == player.marker) {
+                    count++;
+                }
+            }
+        } else {
+            console.log("Winner -> True")
+            return true;
+        }
+
+        if(count != 3) {
+            count = 0;
+            // Second Diagonal Check
+            let col = gameboard.length - 1;
+            for(let row = 0; row < gameboard.length; row++) {
+                if(gameboard[row][col] == player.marker) {
+                    count++;
+                    col--;
+                }
+            }
+        } else {
+            console.log("Winner -> True")
+            return true;
+        }
+
         console.log("Winner -> False")
-        return 0;
+        return false;
     }
 
     // Draw Condition
@@ -119,7 +130,7 @@ function playGame() {
         // Need to use checkWinner and checkIfDraw methods here
     }
 
-    return {checkWinner, checkIfDraw, makeMove, checkIfGameOver, checkIfCellEmpty};
+    return {checkIfWinnerOrDraw, checkIfDraw, makeMove, checkIfGameOver, checkIfCellEmpty};
 }
 
 // Some Testing
@@ -129,10 +140,17 @@ const playerOne = createPlayer("Player-1", "X");
 const playerTwo = createPlayer("Player-2", "O");
 
 const game = playGame();
-game.makeMove(0, 2, playerOne);
+
+game.makeMove(0, 0, playerOne);
 
 game.makeMove(1, 1, playerOne);
 
-game.makeMove(2, 0, playerOne);
+game.makeMove(2, 2, playerOne);
 
-game.checkWinner(playerOne);
+// game.makeMove(1, 0, playerOne);
+
+// game.makeMove(1, 1, playerOne);
+
+// game.makeMove(1, 2, playerOne);
+
+game.checkIfWinnerOrDraw(playerOne);
