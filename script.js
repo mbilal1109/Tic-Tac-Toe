@@ -37,19 +37,34 @@ function playGame() {
         //     }
         // }
 
-        if(count != 3) {
-            count = 0;
-            for(let col = 0; col < gameboard.length; col++) {
-                count = 0;
-                for(let row = 0; row < gameboard.length; row++) {
-                    if(gameboard[col][row] == player.marker && count < 3) {
-                        count++;
-                    }
+        // if(count != 3) {
+        //     count = 0;
+        //     for(let col = 0; col < gameboard.length; col++) {
+        //         count = 0;
+        //         for(let row = 0; row < gameboard.length; row++) {
+        //             if(gameboard[col][row] == player.marker && count < 3) {
+        //                 count++;
+        //             }
+        //         }
+        //         if(count == 3) {
+        //             return true;
+        //         }
+        //     }
+        // } else {
+        //     console.log("Winner -> True")
+        //     return true;
+        // }
+
+        for(let col = 0; col < gameboard.length; col++) {
+            for(let row = 0; row < gameboard.length; row++) {
+                if(gameboard[col][row] == player.marker && count < 3) {
+                    count++;
                 }
             }
-        } else {
-            console.log("Winner -> True")
-            return true;
+            if(count == 3) {
+                console.log("Winner -> True")
+                return true;
+            }
         }
 
         if(count != 3) {
@@ -124,13 +139,18 @@ function playGame() {
     }
 
     // Game Over
-    function checkIfGameOver() {
+    function endGame(player) {
+        // Resetting the gameboard array
+        for(let row = 0; row < gameboard.length; row++) {
+            for(let col = 0; col < gameboard.length; col++) {
+                gameboard[row][col] = '';
+            }
+        }
+        console.log(`${player.name} Wins!!`);
         console.log("Game Over");
-        // If a winner is found or draw happens then we call this method
-        // Need to use checkWinner and checkIfDraw methods here
     }
 
-    return {checkIfWinnerOrDraw, checkIfDraw, makeMove, checkIfGameOver, checkIfCellEmpty};
+    return {checkIfWinnerOrDraw, checkIfDraw, makeMove, endGame, checkIfCellEmpty};
 }
 
 // Some Testing
@@ -141,16 +161,39 @@ const playerTwo = createPlayer("Player-2", "O");
 
 const game = playGame();
 
-game.makeMove(0, 0, playerOne);
-
-game.makeMove(1, 1, playerOne);
-
-game.makeMove(2, 2, playerOne);
-
-// game.makeMove(1, 0, playerOne);
+// Diagonal Testing from [0][0]:
+// game.makeMove(0, 0, playerOne);
 
 // game.makeMove(1, 1, playerOne);
 
-// game.makeMove(1, 2, playerOne);
+// game.makeMove(2, 2, playerOne);
+
+// ---------------------------------
+
+// Diagonal Testing from [0][2]:
+game.makeMove(0, 2, playerOne);
+
+game.makeMove(1, 1, playerOne);
+
+game.makeMove(2, 0, playerOne);
+
+// ---------------------------------
+
+// Horizontal Testing:
+// game.makeMove(0, 0, playerOne);
+
+// game.makeMove(0, 1, playerOne);
+
+// game.makeMove(0, 2, playerOne);
+
+// ---------------------------------
+
+// Vertical Testing:
+// game.makeMove(0, 1, playerOne);
+
+// game.makeMove(1, 1, playerOne);
+
+// game.makeMove(2, 1, playerOne);
 
 game.checkIfWinnerOrDraw(playerOne);
+game.endGame(playerOne);
