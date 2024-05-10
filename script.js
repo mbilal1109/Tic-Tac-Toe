@@ -14,7 +14,6 @@ const gameboard = (function() {
 
 function createPlayer(name, marker) {
     let playersTurn = false;
-    // let turnTaken = false;
 
     const startPlayersTurn = () => playersTurn = true;
     const endPlayersTurn = () => playersTurn = false;
@@ -24,36 +23,10 @@ function createPlayer(name, marker) {
 
 function playGame() {
     // Winning Condition
-    function checkIfWinnerOrDraw(player) {
+    function checkIfWinner(player) {
         // Can win vertically, horizontally, and diagonally
         // Player can win from 8 ways: 3 vertically, 3 horizontallly, 2 diagonally
         let count = 0;
-
-        // for(let row = 0; row < gameboard.length; row++) {
-        //     for(let col = 0; col < gameboard.length; col++) {
-        //         if(gameboard[row][col] == player.marker && count <= 3) {
-        //             count++;
-        //         }
-        //     }
-        // }
-
-        // if(count != 3) {
-        //     count = 0;
-        //     for(let col = 0; col < gameboard.length; col++) {
-        //         count = 0;
-        //         for(let row = 0; row < gameboard.length; row++) {
-        //             if(gameboard[col][row] == player.marker && count < 3) {
-        //                 count++;
-        //             }
-        //         }
-        //         if(count == 3) {
-        //             return true;
-        //         }
-        //     }
-        // } else {
-        //     console.log("Winner -> True")
-        //     return true;
-        // }
 
         for(let col = 0; col < gameboard.length; col++) {
             for(let row = 0; row < gameboard.length; row++) {
@@ -100,20 +73,23 @@ function playGame() {
     }
 
     // Draw Condition
-    function checkIfDraw() {
+    function checkIfDraw(totalTurns, playerOne, playerTwo) {
         // Keep a var that keeps track of the moves made in total by both players
         // Total 9 moves can be made, if var reaches 9 and no winner declared then its
         // a draw.
-        console.log("Draw");
+        if(totalTurns == 9 && !checkIfWinner(playerOne) && !checkIfWinner(playerTwo)) {
+            console.log("Draw");
+            return true;
+        }
+        return false;
     }
 
     // Player Moves
     function makeMove(row, column, player) {
         // Before the move is made, check if cell is valid
         // If cell valid, then it will place the marker
-        gameArray = gameboard;
         if(checkIfCellEmpty(row, column, player)) {
-            gameArray[row][column] = player.marker;
+            gameboard[row][column] = player.marker;
             console.log("Move Made");
         } else {
             console.log("Select a valid cell");
@@ -127,8 +103,7 @@ function playGame() {
         // First check if the row & cols given are valid
         // Next check if that index is empty or not
         if(row <= 2 && column <= 2) {
-            gameArray = gameboard;
-            if(gameArray[row][column] == '') {
+            if(gameboard[row][column] == '') {
                 console.log("Cell is empty!");
                 return true;
             } 
@@ -150,11 +125,41 @@ function playGame() {
         console.log("Game Over");
     }
 
-    return {checkIfWinnerOrDraw, checkIfDraw, makeMove, endGame, checkIfCellEmpty};
+    return {checkIfWinner, checkIfDraw, makeMove, endGame, checkIfCellEmpty};
+}
+
+function playGameUI() {
+    const container = document.querySelector("#container");
+    // Will display the gameboard on the UI
+    function displayGameboard() {
+        console.log(container)
+        for(let i = 0; i <= 8; i++) {
+            let innerContainer = document.createElement("div");
+            innerContainer.setAttribute("class", "inner-container");
+            container.style.setProperty('grid-template-columns', 'repeat(' + 3 + ', 1fr)');
+            container.style.setProperty('grid-template-rows', 'repeat(' + 3 + ', 1fr)');
+        }
+    }
+
+    function getHoverEffect() {
+        const innerContainer = document.querySelectorAll(".inner-container");
+        innerContainer.forEach((div) => {
+            div.addEventListener("mousemove", function () {
+                div.classList.add("hover-effect");
+            });
+        });
+    }
+
+    return {displayGameboard, getHoverEffect}
 }
 
 // Some Testing
-console.log(gameboard)
+
+// UI Testing
+const gameUI = playGameUI();
+gameUI.displayGameboard();
+gameUI.getHoverEffect();
+
 
 const playerOne = createPlayer("Player-1", "X");
 const playerTwo = createPlayer("Player-2", "O");
@@ -176,6 +181,7 @@ game.makeMove(0, 2, playerOne);
 game.makeMove(1, 1, playerOne);
 
 game.makeMove(2, 0, playerOne);
+game.checkIfCellEmpty(3, 2);
 
 // ---------------------------------
 
@@ -195,5 +201,5 @@ game.makeMove(2, 0, playerOne);
 
 // game.makeMove(2, 1, playerOne);
 
-game.checkIfWinnerOrDraw(playerOne);
+game.checkIfWinner(playerOne);
 game.endGame(playerOne);
