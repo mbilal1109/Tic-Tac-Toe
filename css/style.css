@@ -14,5 +14,9 @@
 }
 
 .hover-effect {
-    background-color: gray;
+    background-color: lightgray;
+}
+
+.inner-container {
+    border: 1px solid black;
 }

@@ -136,6 +136,7 @@ function playGameUI() {
         for(let i = 0; i <= 8; i++) {
             let innerContainer = document.createElement("div");
             innerContainer.setAttribute("class", "inner-container");
+            container.appendChild(innerContainer);
             container.style.setProperty('grid-template-columns', 'repeat(' + 3 + ', 1fr)');
             container.style.setProperty('grid-template-rows', 'repeat(' + 3 + ', 1fr)');
         }
@@ -144,8 +145,11 @@ function playGameUI() {
     function getHoverEffect() {
         const innerContainer = document.querySelectorAll(".inner-container");
         innerContainer.forEach((div) => {
-            div.addEventListener("mousemove", function () {
+            div.addEventListener("mouseover", function () {
                 div.classList.add("hover-effect");
+            });
+            div.addEventListener("mouseout", function () {
+                div.classList.remove("hover-effect");
             });
         });
     }
