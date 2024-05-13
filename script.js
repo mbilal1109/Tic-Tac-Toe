@@ -154,7 +154,25 @@ function playGameUI() {
         });
     }
 
-    return {displayGameboard, getHoverEffect}
+    function displayPlayersMarker(playerMarker) {
+        const innerContainer = document.querySelectorAll(".inner-container");
+        innerContainer.forEach((div) => {
+            div.addEventListener("click", function() {
+                const markerParagraph = document.createElement("p");
+                markerParagraph.innerHTML = playerMarker;
+                div.appendChild(markerParagraph);
+            });
+        });
+    }
+
+    function clearUIGrid() {
+        const clearButton = document.querySelector("#clear");
+        clearButton.addEventListener('click', function() {
+            window.location.reload();
+        });
+    }
+
+    return {displayGameboard, getHoverEffect, displayPlayersMarker, clearUIGrid}
 }
 
 // Some Testing
@@ -163,6 +181,8 @@ function playGameUI() {
 const gameUI = playGameUI();
 gameUI.displayGameboard();
 gameUI.getHoverEffect();
+gameUI.displayPlayersMarker("X");
+gameUI.clearUIGrid();
 
 
 const playerOne = createPlayer("Player-1", "X");
