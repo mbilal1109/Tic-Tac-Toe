@@ -114,6 +114,7 @@ function playGame() {
         console.log("Cell Out Of Bound, Row & Columns Start From 0.");
     }
 
+    // Cell Validation
     function checkIfCellIsEmpty(savedCellInfo, cellValues) {
         if(cellValues.includes(savedCellInfo)) {
             console.log("It includes")
@@ -139,7 +140,7 @@ function playGame() {
 
     // }
 
-    return {checkIfWinner, checkIfDraw, makeMove, endGame, checkIfCellEmpty, checkIfCellIsEmpty};
+    return {checkIfWinner, checkIfDraw, makeMove, endGame, checkIfCellIsEmpty};
 }
 
 function playGameUI() {
@@ -147,6 +148,7 @@ function playGameUI() {
     const cellValues = ["0", "1", "2", "3", "4", "5", "6", "7", "8"];
     const playerOne = createPlayer("Player-1", "X");
     const playerTwo = createPlayer("Player-2", "O");
+    playerOne.startPlayersTurn();
     const game = playGame();
     
     function displayGameboard() {
@@ -175,11 +177,26 @@ function playGameUI() {
     function displayPlayersMarker(event) {
         const clickedCell = event.target
         const savedCellInfo = clickedCell.getAttribute("data-index");
+        const markerSpace = document.createElement("p");
+
+        // grabbing a specific element using the data attribute value
+        const cell = document.querySelector(`[data-index="${savedCellInfo}"]`);
 
         if(game.checkIfCellIsEmpty(savedCellInfo, cellValues)) {
             let cellIndex = cellValues.indexOf(savedCellInfo);
             cellValues.splice(cellIndex, 1);
-            console.log(cellValues)
+
+            if(playerOne.isPlayersTurn()) {
+                markerSpace.innerHTML = playerOne.marker;
+                cell.appendChild(markerSpace);
+                playerOne.endPlayersTurn();
+                playerTwo.startPlayersTurn();
+            } else {
+                markerSpace.innerHTML = playerTwo.marker;
+                cell.appendChild(markerSpace);
+                playerTwo.endPlayersTurn();
+                playerOne.startPlayersTurn();
+            }
         }
     }
 
@@ -190,7 +207,7 @@ function playGameUI() {
         });
     }
 
-    return {displayGameboard, getHoverEffect, displayPlayersMarker, clearUIGrid}
+    return { displayGameboard, getHoverEffect, displayPlayersMarker, clearUIGrid }
 }
 
 function startGame() {
@@ -209,7 +226,7 @@ function startGame() {
         gameUI.clearUIGrid();
     }
     
-    return {start}
+    return { start };
 }
 
 // Some Testing
