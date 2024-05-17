@@ -19,7 +19,7 @@ function createPlayer(name, marker) {
     const endPlayersTurn = () => playersTurn = false;
     const isPlayersTurn = () => playersTurn;
 
-    return {name, marker, startPlayersTurn, endPlayersTurn, isPlayersTurn};
+    return { name, marker, startPlayersTurn, endPlayersTurn, isPlayersTurn };
 }
 
 function playGame() {
@@ -74,48 +74,31 @@ function playGame() {
     }
 
     // Draw Condition
-    function checkIfDraw(totalTurns, playerOne, playerTwo) {
-        // Keep a var that keeps track of the moves made in total by both players
-        // Total 9 moves can be made, if var reaches 9 and no winner declared then its
-        // a draw.
-        if(totalTurns == 9 && !checkIfWinner(playerOne) && !checkIfWinner(playerTwo)) {
-            console.log("Draw");
+    // Later check the winning condition methods here, along with cellValues
+    function checkIfDraw(cellValues) {
+        if(cellValues.length == 0) {
             return true;
         }
         return false;
     }
 
     // Player Moves
-    function makeMove(row, column, player) {
-        // Before the move is made, check if cell is valid
-        // If cell valid, then it will place the marker
-        if(checkIfCellEmpty(row, column, player)) {
-            gameboard[row][column] = player.marker;
-            console.log("Move Made");
+    function makeMove(markerSpace, cell, playerOne, playerTwo) {
+        if(playerOne.isPlayersTurn()) {
+            markerSpace.innerHTML = playerOne.marker;
+            cell.appendChild(markerSpace);
+            playerOne.endPlayersTurn();
+            playerTwo.startPlayersTurn();
         } else {
-            console.log("Select a valid cell");
+            markerSpace.innerHTML = playerTwo.marker;
+            cell.appendChild(markerSpace);
+            playerTwo.endPlayersTurn();
+            playerOne.startPlayersTurn();
         }
-        // Also will need to check if winner should be declared or
-        // a draw should happen.
     }
 
     // Cell Validation
-    function checkIfCellEmpty(row, column) {
-        // First check if the row & cols given are valid
-        // Next check if that index is empty or not
-        if(row <= 2 && column <= 2) {
-            if(gameboard[row][column] == '') {
-                console.log("Cell is empty!");
-                return true;
-            } 
-            console.log("Cell is not empty!");
-            return false;
-        }
-        console.log("Cell Out Of Bound, Row & Columns Start From 0.");
-    }
-
-    // Cell Validation
-    function checkIfCellIsEmpty(savedCellInfo, cellValues) {
+    function checkIfCellEmpty(savedCellInfo, cellValues) {
         if(cellValues.includes(savedCellInfo)) {
             console.log("It includes")
             return true;
@@ -125,22 +108,19 @@ function playGame() {
     }
 
     // Game Over
-    function endGame(player) {
-        // Resetting the gameboard array
-        for(let row = 0; row < gameboard.length; row++) {
-            for(let col = 0; col < gameboard.length; col++) {
-                gameboard[row][col] = '';
-            }
-        }
-        console.log(`${player.name} Wins!!`);
-        console.log("Game Over");
+    function gameOver(cellValues) {
+        // Check if the game is draw, or if one of the players has won.
+        if(checkIfDraw(cellValues)) {
+            alert("Draw!!!");
+            alert("Game Over!"); 
+        } 
+        // else if(checkIfWinner(player)) {
+        //     alert(`${player} Wins!!`);
+        //     alert("Game Over!");
+        // }
     }
 
-    // function gameOver(player, cellValues) {
-
-    // }
-
-    return {checkIfWinner, checkIfDraw, makeMove, endGame, checkIfCellIsEmpty};
+    return { makeMove, gameOver, checkIfCellEmpty }; 
 }
 
 function playGameUI() {
@@ -175,6 +155,7 @@ function playGameUI() {
     }
 
     function displayPlayersMarker(event) {
+        // Event Delegation
         const clickedCell = event.target
         const savedCellInfo = clickedCell.getAttribute("data-index");
         const markerSpace = document.createElement("p");
@@ -182,21 +163,11 @@ function playGameUI() {
         // grabbing a specific element using the data attribute value
         const cell = document.querySelector(`[data-index="${savedCellInfo}"]`);
 
-        if(game.checkIfCellIsEmpty(savedCellInfo, cellValues)) {
+        if(game.checkIfCellEmpty(savedCellInfo, cellValues)) {
             let cellIndex = cellValues.indexOf(savedCellInfo);
             cellValues.splice(cellIndex, 1);
-
-            if(playerOne.isPlayersTurn()) {
-                markerSpace.innerHTML = playerOne.marker;
-                cell.appendChild(markerSpace);
-                playerOne.endPlayersTurn();
-                playerTwo.startPlayersTurn();
-            } else {
-                markerSpace.innerHTML = playerTwo.marker;
-                cell.appendChild(markerSpace);
-                playerTwo.endPlayersTurn();
-                playerOne.startPlayersTurn();
-            }
+            game.makeMove(markerSpace, cell, playerOne, playerTwo);
+            game.gameOver(cellValues);
         }
     }
 
@@ -215,7 +186,6 @@ function startGame() {
     const playerTwo = createPlayer("Player-2", "O");
     const gameUI = playGameUI();
 
-    playerTwo.startPlayersTurn();
     gameUI.displayGameboard();
     gameUI.getHoverEffect();
 
