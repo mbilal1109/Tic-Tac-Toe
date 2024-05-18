@@ -29,9 +29,10 @@ function playGame() {
         // Player can win from 8 ways: 3 vertically, 3 horizontallly, 2 diagonally
         let count = 0;
 
-        for(let col = 0; col < gameboard.length; col++) {
-            for(let row = 0; row < gameboard.length; row++) {
-                if(gameboard[col][row] == player.marker && count < 3) {
+        for(let row = 0; row < gameboard.length; row++) {
+            count = 0;
+            for(let col = 0; col < gameboard.length; col++) {
+                if(gameboard[row][col] == player.marker && count < 3) {
                     count++;
                 }
             }
@@ -83,14 +84,16 @@ function playGame() {
     }
 
     // Player Moves
-    function makeMove(markerSpace, cell, playerOne, playerTwo) {
+    function makeMove(markerSpace, cell, playerOne, playerTwo, savedRowInfo, savedColInfo) {
         if(playerOne.isPlayersTurn()) {
             markerSpace.innerHTML = playerOne.marker;
+            gameboard[savedRowInfo][savedColInfo] = playerOne.marker;
             cell.appendChild(markerSpace);
             playerOne.endPlayersTurn();
             playerTwo.startPlayersTurn();
         } else {
             markerSpace.innerHTML = playerTwo.marker;
+            gameboard[savedRowInfo][savedColInfo] = playerTwo.marker;
             cell.appendChild(markerSpace);
             playerTwo.endPlayersTurn();
             playerOne.startPlayersTurn();
@@ -107,38 +110,65 @@ function playGame() {
         return false;
     }
 
-    // Game Over
-    function gameOver(cellValues) {
-        // Check if the game is draw, or if one of the players has won.
-        if(checkIfDraw(cellValues)) {
-            alert("Draw!!!");
-            alert("Game Over!"); 
-        } 
-        // else if(checkIfWinner(player)) {
-        //     alert(`${player} Wins!!`);
-        //     alert("Game Over!");
-        // }
+    function clearGameboard() {
+        // Resetting the gameboard array
+        for(let row = 0; row < gameboard.length; row++) {
+            for(let col = 0; col < gameboard.length; col++) {
+                gameboard[row][col] = '';
+            }
+        }
     }
 
-    return { makeMove, gameOver, checkIfCellEmpty }; 
+    // Game Over
+    function gameOver(player, cellValues) {
+        // Check if the game is draw, or if one of the players has won.
+        console.log(gameboard);
+        if(checkIfDraw(cellValues)) {
+            alert("Draw!!!");
+            alert("Game Over!");
+            return true; 
+        } else if(checkIfWinner(player)) {
+            alert(`${player.name} Wins!!`);
+            alert("Game Over!");
+            return true;
+        }
+        return false;
+    }
+
+    return { makeMove, gameOver, checkIfCellEmpty, clearGameboard }; 
 }
 
 function playGameUI() {
     const container = document.querySelector("#container");
     const cellValues = ["0", "1", "2", "3", "4", "5", "6", "7", "8"];
+
     const playerOne = createPlayer("Player-1", "X");
     const playerTwo = createPlayer("Player-2", "O");
     playerOne.startPlayersTurn();
+    
     const game = playGame();
+    let tempCount = 0;
+    let row = 0;
+    let column = 0;
     
     function displayGameboard() {
         for(let i = 0; i <= 8; i++) {
             let innerContainer = document.createElement("div");
             innerContainer.setAttribute("class", "inner-container");
+            tempCount++;
+            innerContainer.setAttribute("data-row", `${row}`);
+            innerContainer.setAttribute("data-column", `${column}`);
             innerContainer.setAttribute("data-index", `${i}`);
             container.appendChild(innerContainer);
             container.style.setProperty('grid-template-columns', 'repeat(' + 3 + ', 1fr)');
             container.style.setProperty('grid-template-rows', 'repeat(' + 3 + ', 1fr)');
+            column++;
+
+            if(tempCount == 3) {
+                row++;
+                column = 0;
+                tempCount = 0;
+            }
         }
     }
 
@@ -154,11 +184,22 @@ function playGameUI() {
         });
     }
 
+    function clearUIGameboard() {
+        const innerContainer = document.querySelectorAll(".inner-container");
+        innerContainer.forEach((div) => {
+            div.innerHTML = "";
+            game.clearGameboard();
+        });
+    }
+
     function displayPlayersMarker(event) {
         // Event Delegation
         const clickedCell = event.target
         const savedCellInfo = clickedCell.getAttribute("data-index");
         const markerSpace = document.createElement("p");
+
+        const savedRowInfo = clickedCell.getAttribute("data-row");
+        const savedColInfo = clickedCell.getAttribute("data-column");
 
         // grabbing a specific element using the data attribute value
         const cell = document.querySelector(`[data-index="${savedCellInfo}"]`);
@@ -166,8 +207,11 @@ function playGameUI() {
         if(game.checkIfCellEmpty(savedCellInfo, cellValues)) {
             let cellIndex = cellValues.indexOf(savedCellInfo);
             cellValues.splice(cellIndex, 1);
-            game.makeMove(markerSpace, cell, playerOne, playerTwo);
-            game.gameOver(cellValues);
+            const player = (playerOne.isPlayersTurn()) ? (playerOne) : (playerTwo);
+            game.makeMove(markerSpace, cell, playerOne, playerTwo, savedRowInfo, savedColInfo);
+            if(game.gameOver(player, cellValues)) {
+                clearUIGameboard();
+            }
         }
     }
 
@@ -178,7 +222,7 @@ function playGameUI() {
         });
     }
 
-    return { displayGameboard, getHoverEffect, displayPlayersMarker, clearUIGrid }
+    return { displayGameboard, getHoverEffect, displayPlayersMarker, clearUIGrid, clearUIGameboard }
 }
 
 function startGame() {
@@ -201,46 +245,3 @@ function startGame() {
 
 // Some Testing
 const ticTacToe = startGame().start();
-
-
-// Testing
-
-// const game = playGame();
-
-// // Diagonal Testing from [0][0]:
-// // game.makeMove(0, 0, playerOne);
-
-// // game.makeMove(1, 1, playerOne);
-
-// // game.makeMove(2, 2, playerOne);
-
-// // ---------------------------------
-
-// // Diagonal Testing from [0][2]:
-// game.makeMove(0, 2, playerOne);
-
-// game.makeMove(1, 1, playerOne);
-
-// game.makeMove(2, 0, playerOne);
-// game.checkIfCellEmpty(3, 2);
-
-// // ---------------------------------
-
-// // Horizontal Testing:
-// // game.makeMove(0, 0, playerOne);
-
-// // game.makeMove(0, 1, playerOne);
-
-// // game.makeMove(0, 2, playerOne);
-
-// // ---------------------------------
-
-// // Vertical Testing:
-// // game.makeMove(0, 1, playerOne);
-
-// // game.makeMove(1, 1, playerOne);
-
-// // game.makeMove(2, 1, playerOne);
-
-// game.checkIfWinner(playerOne);
-// game.endGame(playerOne);
