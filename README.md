@@ -22,6 +22,10 @@ Tic-Tac-Toe is a two-player game where each player takes turns marking a spot on
 5. **Draw Condition**: If all cells are filled and there is no winner, the game ends in a draw.
 6. **Restart**: Player can press the clear button to restart the game for any reason.
 
+## Future Improvement
+
+1. Ability to Play with the Computer
+
 ## Installation
 
 To run this Tic-Tac-Toe game on your local machine, follow these steps:
