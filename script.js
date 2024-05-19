@@ -34,6 +34,8 @@ function playGame() {
             for(let col = 0; col < gameboard.length; col++) {
                 if(gameboard[row][col] == player.marker && count < 3) {
                     count++;
+                } else if(gameboard[col][row] == player.marker && count < 3) {
+                    count++;
                 }
             }
             if(count == 3) {
@@ -188,7 +190,6 @@ function playGameUI() {
         const innerContainer = document.querySelectorAll(".inner-container");
         innerContainer.forEach((div) => {
             div.innerHTML = "";
-            game.clearGameboard();
         });
     }
 
@@ -211,6 +212,8 @@ function playGameUI() {
             game.makeMove(markerSpace, cell, playerOne, playerTwo, savedRowInfo, savedColInfo);
             if(game.gameOver(player, cellValues)) {
                 clearUIGameboard();
+                game.clearGameboard();
+                window.location.reload();
             }
         }
     }
