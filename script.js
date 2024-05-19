@@ -19,7 +19,7 @@ function createPlayer(name, marker) {
     const endPlayersTurn = () => playersTurn = false;
     const isPlayersTurn = () => playersTurn;
 
-    return {name, marker, startPlayersTurn, endPlayersTurn, isPlayersTurn};
+    return { name, marker, startPlayersTurn, endPlayersTurn, isPlayersTurn };
 }
 
 function playGame() {
@@ -29,9 +29,12 @@ function playGame() {
         // Player can win from 8 ways: 3 vertically, 3 horizontallly, 2 diagonally
         let count = 0;
 
-        for(let col = 0; col < gameboard.length; col++) {
-            for(let row = 0; row < gameboard.length; row++) {
-                if(gameboard[col][row] == player.marker && count < 3) {
+        for(let row = 0; row < gameboard.length; row++) {
+            count = 0;
+            for(let col = 0; col < gameboard.length; col++) {
+                if(gameboard[row][col] == player.marker && count < 3) {
+                    count++;
+                } else if(gameboard[col][row] == player.marker && count < 3) {
                     count++;
                 }
             }
@@ -74,48 +77,33 @@ function playGame() {
     }
 
     // Draw Condition
-    function checkIfDraw(totalTurns, playerOne, playerTwo) {
-        // Keep a var that keeps track of the moves made in total by both players
-        // Total 9 moves can be made, if var reaches 9 and no winner declared then its
-        // a draw.
-        if(totalTurns == 9 && !checkIfWinner(playerOne) && !checkIfWinner(playerTwo)) {
-            console.log("Draw");
+    // Later check the winning condition methods here, along with cellValues
+    function checkIfDraw(cellValues) {
+        if(cellValues.length == 0) {
             return true;
         }
         return false;
     }
 
     // Player Moves
-    function makeMove(row, column, player) {
-        // Before the move is made, check if cell is valid
-        // If cell valid, then it will place the marker
-        if(checkIfCellEmpty(row, column, player)) {
-            gameboard[row][column] = player.marker;
-            console.log("Move Made");
+    function makeMove(markerSpace, cell, playerOne, playerTwo, savedRowInfo, savedColInfo) {
+        if(playerOne.isPlayersTurn()) {
+            markerSpace.innerHTML = playerOne.marker;
+            gameboard[savedRowInfo][savedColInfo] = playerOne.marker;
+            cell.appendChild(markerSpace);
+            playerOne.endPlayersTurn();
+            playerTwo.startPlayersTurn();
         } else {
-            console.log("Select a valid cell");
+            markerSpace.innerHTML = playerTwo.marker;
+            gameboard[savedRowInfo][savedColInfo] = playerTwo.marker;
+            cell.appendChild(markerSpace);
+            playerTwo.endPlayersTurn();
+            playerOne.startPlayersTurn();
         }
-        // Also will need to check if winner should be declared or
-        // a draw should happen.
     }
 
     // Cell Validation
-    function checkIfCellEmpty(row, column) {
-        // First check if the row & cols given are valid
-        // Next check if that index is empty or not
-        if(row <= 2 && column <= 2) {
-            if(gameboard[row][column] == '') {
-                console.log("Cell is empty!");
-                return true;
-            } 
-            console.log("Cell is not empty!");
-            return false;
-        }
-        console.log("Cell Out Of Bound, Row & Columns Start From 0.");
-    }
-
-    // Cell Validation
-    function checkIfCellIsEmpty(savedCellInfo, cellValues) {
+    function checkIfCellEmpty(savedCellInfo, cellValues) {
         if(cellValues.includes(savedCellInfo)) {
             console.log("It includes")
             return true;
@@ -124,41 +112,65 @@ function playGame() {
         return false;
     }
 
-    // Game Over
-    function endGame(player) {
+    function clearGameboard() {
         // Resetting the gameboard array
         for(let row = 0; row < gameboard.length; row++) {
             for(let col = 0; col < gameboard.length; col++) {
                 gameboard[row][col] = '';
             }
         }
-        console.log(`${player.name} Wins!!`);
-        console.log("Game Over");
     }
 
-    // function gameOver(player, cellValues) {
+    // Game Over
+    function gameOver(player, cellValues) {
+        // Check if the game is draw, or if one of the players has won.
+        console.log(gameboard);
+        if(checkIfDraw(cellValues)) {
+            alert("Draw!!!");
+            alert("Game Over!");
+            return true; 
+        } else if(checkIfWinner(player)) {
+            alert(`${player.name} Wins!!`);
+            alert("Game Over!");
+            return true;
+        }
+        return false;
+    }
 
-    // }
-
-    return {checkIfWinner, checkIfDraw, makeMove, endGame, checkIfCellIsEmpty};
+    return { makeMove, gameOver, checkIfCellEmpty, clearGameboard }; 
 }
 
 function playGameUI() {
     const container = document.querySelector("#container");
     const cellValues = ["0", "1", "2", "3", "4", "5", "6", "7", "8"];
+
     const playerOne = createPlayer("Player-1", "X");
     const playerTwo = createPlayer("Player-2", "O");
     playerOne.startPlayersTurn();
+    
     const game = playGame();
+    let tempCount = 0;
+    let row = 0;
+    let column = 0;
     
     function displayGameboard() {
         for(let i = 0; i <= 8; i++) {
             let innerContainer = document.createElement("div");
             innerContainer.setAttribute("class", "inner-container");
+            tempCount++;
+            innerContainer.setAttribute("data-row", `${row}`);
+            innerContainer.setAttribute("data-column", `${column}`);
             innerContainer.setAttribute("data-index", `${i}`);
             container.appendChild(innerContainer);
             container.style.setProperty('grid-template-columns', 'repeat(' + 3 + ', 1fr)');
             container.style.setProperty('grid-template-rows', 'repeat(' + 3 + ', 1fr)');
+            column++;
+
+            if(tempCount == 3) {
+                row++;
+                column = 0;
+                tempCount = 0;
+            }
         }
     }
 
@@ -174,28 +186,34 @@ function playGameUI() {
         });
     }
 
+    function clearUIGameboard() {
+        const innerContainer = document.querySelectorAll(".inner-container");
+        innerContainer.forEach((div) => {
+            div.innerHTML = "";
+        });
+    }
+
     function displayPlayersMarker(event) {
+        // Event Delegation
         const clickedCell = event.target
         const savedCellInfo = clickedCell.getAttribute("data-index");
         const markerSpace = document.createElement("p");
 
+        const savedRowInfo = clickedCell.getAttribute("data-row");
+        const savedColInfo = clickedCell.getAttribute("data-column");
+
         // grabbing a specific element using the data attribute value
         const cell = document.querySelector(`[data-index="${savedCellInfo}"]`);
 
-        if(game.checkIfCellIsEmpty(savedCellInfo, cellValues)) {
+        if(game.checkIfCellEmpty(savedCellInfo, cellValues)) {
             let cellIndex = cellValues.indexOf(savedCellInfo);
             cellValues.splice(cellIndex, 1);
-
-            if(playerOne.isPlayersTurn()) {
-                markerSpace.innerHTML = playerOne.marker;
-                cell.appendChild(markerSpace);
-                playerOne.endPlayersTurn();
-                playerTwo.startPlayersTurn();
-            } else {
-                markerSpace.innerHTML = playerTwo.marker;
-                cell.appendChild(markerSpace);
-                playerTwo.endPlayersTurn();
-                playerOne.startPlayersTurn();
+            const player = (playerOne.isPlayersTurn()) ? (playerOne) : (playerTwo);
+            game.makeMove(markerSpace, cell, playerOne, playerTwo, savedRowInfo, savedColInfo);
+            if(game.gameOver(player, cellValues)) {
+                clearUIGameboard();
+                game.clearGameboard();
+                window.location.reload();
             }
         }
     }
@@ -207,7 +225,7 @@ function playGameUI() {
         });
     }
 
-    return { displayGameboard, getHoverEffect, displayPlayersMarker, clearUIGrid }
+    return { displayGameboard, getHoverEffect, displayPlayersMarker, clearUIGrid, clearUIGameboard }
 }
 
 function startGame() {
@@ -215,7 +233,6 @@ function startGame() {
     const playerTwo = createPlayer("Player-2", "O");
     const gameUI = playGameUI();
 
-    playerTwo.startPlayersTurn();
     gameUI.displayGameboard();
     gameUI.getHoverEffect();
 
@@ -231,46 +248,3 @@ function startGame() {
 
 // Some Testing
 const ticTacToe = startGame().start();
-
-
-// Testing
-
-// const game = playGame();
-
-// // Diagonal Testing from [0][0]:
-// // game.makeMove(0, 0, playerOne);
-
-// // game.makeMove(1, 1, playerOne);
-
-// // game.makeMove(2, 2, playerOne);
-
-// // ---------------------------------
-
-// // Diagonal Testing from [0][2]:
-// game.makeMove(0, 2, playerOne);
-
-// game.makeMove(1, 1, playerOne);
-
-// game.makeMove(2, 0, playerOne);
-// game.checkIfCellEmpty(3, 2);
-
-// // ---------------------------------
-
-// // Horizontal Testing:
-// // game.makeMove(0, 0, playerOne);
-
-// // game.makeMove(0, 1, playerOne);
-
-// // game.makeMove(0, 2, playerOne);
-
-// // ---------------------------------
-
-// // Vertical Testing:
-// // game.makeMove(0, 1, playerOne);
-
-// // game.makeMove(1, 1, playerOne);
-
-// // game.makeMove(2, 1, playerOne);
-
-// game.checkIfWinner(playerOne);
-// game.endGame(playerOne);
