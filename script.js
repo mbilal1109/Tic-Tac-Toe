@@ -23,12 +23,11 @@ function createPlayer(name, marker) {
 }
 
 function playGame() {
-    // Winning Condition
+
     function checkIfWinner(player) {
-        // Can win vertically, horizontally, and diagonally
-        // Player can win from 8 ways: 3 vertically, 3 horizontallly, 2 diagonally
         let count = 0;
 
+        // Horizontal Check
         for(let row = 0; row < gameboard.length; row++) {
             count = 0;
             for(let col = 0; col < gameboard.length; col++) {
@@ -42,56 +41,51 @@ function playGame() {
             }
         }
 
-        if(count != 3) {
+        count = 0;
+        // Vertical Check
+        for(let row = 0; row < gameboard.length; row++) {
             count = 0;
-            // First Diagonal Check
-            for(let row = 0; row < gameboard.length; row++) {
-                count = 0;
-                for(let col = 0; col < gameboard.length; col++) {
-                    if(gameboard[col][row] == player.marker && count < 3) {
-                        count++;
-                    }
-                }
-            }
-        } else {
-            console.log("Winner -> True")
-            return true;
-        }
-
-        if(count != 3) {
-            count = 0;
-            // First Diagonal Check
-            for(let row = 0; row < gameboard.length; row++) {
-                if(gameboard[row][row] == player.marker) {
+            for(let col = 0; col < gameboard.length; col++) {
+                if(gameboard[col][row] == player.marker && count < 3) {
                     count++;
                 }
             }
-        } else {
-            console.log("Winner -> True")
-            return true;
+            if(count == 3) {
+                console.log("Winner -> True")
+                return true;
+            }
         }
 
-        if(count != 3) {
-            count = 0;
-            // Second Diagonal Check
-            let col = gameboard.length - 1;
-            for(let row = 0; row < gameboard.length; row++) {
-                if(gameboard[row][col] == player.marker) {
-                    count++;
-                    col--;
-                }
+        count = 0;
+        // First Diagonal Check
+        for(let row = 0; row < gameboard.length; row++) {
+            if(gameboard[row][row] == player.marker) {
+                count++;
             }
-        } else {
-            console.log("Winner -> True")
-            return true;
+            if(count == 3) {
+                console.log("Winner -> True")
+                return true;
+            }
+        } 
+
+        count = 0;
+        // Second Diagonal Check
+        let col = gameboard.length - 1;
+        for(let row = 0; row < gameboard.length; row++) {
+            if(gameboard[row][col] == player.marker) {
+                count++;
+                col--;
+            }
+            if(count == 3) {
+                console.log("Winner -> True")
+                return true;
+            }
         }
 
         console.log("Winner -> False")
         return false;
     }
 
-    // Draw Condition
-    // Later check the winning condition methods here, along with cellValues
     function checkIfDraw(cellValues) {
         if(cellValues.length == 0) {
             return true;
@@ -127,7 +121,6 @@ function playGame() {
     }
 
     function clearGameboard() {
-        // Resetting the gameboard array
         for(let row = 0; row < gameboard.length; row++) {
             for(let col = 0; col < gameboard.length; col++) {
                 gameboard[row][col] = '';
@@ -137,7 +130,6 @@ function playGame() {
 
     // Game Over
     function gameOver(player, cellValues) {
-        // Check if the game is draw, or if one of the players has won.
         console.log(gameboard);
         if(checkIfDraw(cellValues)) {
             alert("Draw!!!");
@@ -243,8 +235,6 @@ function playGameUI() {
 }
 
 function startGame() {
-    const playerOne = createPlayer("Player-1", "X");
-    const playerTwo = createPlayer("Player-2", "O");
     const gameUI = playGameUI();
 
     gameUI.displayGameboard();
@@ -260,5 +250,4 @@ function startGame() {
     return { start };
 }
 
-// Some Testing
 const ticTacToe = startGame().start();
