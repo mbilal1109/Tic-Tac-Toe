@@ -34,14 +34,28 @@ function playGame() {
             for(let col = 0; col < gameboard.length; col++) {
                 if(gameboard[row][col] == player.marker && count < 3) {
                     count++;
-                } else if(gameboard[col][row] == player.marker && count < 3) {
-                    count++;
                 }
             }
             if(count == 3) {
                 console.log("Winner -> True")
                 return true;
             }
+        }
+
+        if(count != 3) {
+            count = 0;
+            // First Diagonal Check
+            for(let row = 0; row < gameboard.length; row++) {
+                count = 0;
+                for(let col = 0; col < gameboard.length; col++) {
+                    if(gameboard[col][row] == player.marker && count < 3) {
+                        count++;
+                    }
+                }
+            }
+        } else {
+            console.log("Winner -> True")
+            return true;
         }
 
         if(count != 3) {
