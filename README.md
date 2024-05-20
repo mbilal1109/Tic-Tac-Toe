@@ -25,6 +25,7 @@ Tic-Tac-Toe is a two-player game where each player takes turns marking a spot on
 ## Future Improvement
 
 1. Ability to Play with the Computer
+2. Ability to Let Player Select Marker
 
 ## Installation
 
